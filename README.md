@@ -2,20 +2,20 @@
 
 
 
-# [Project Name] 🎯
+ODANDAMMAVA AALARIYAM
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: [AURORA]
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: Nifidha K- NSS COLLEGE OF ENGINEERING,PALAKKAD
+- Member 2: Krishnapriya K M - NSS COLLEGE OF ENGINEERING,PALAKKAD
+
 
 ### Project Description
-[2-3 lines about what your project does]
+Our project is a music player which measures the pace of us walking and plays music accordingly.
 
 ### The Problem (that doesn't exist)
 [What ridiculous problem are you solving?]
