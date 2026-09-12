@@ -6,7 +6,7 @@ ODANDAMMAVA AALARIYAM
 
 
 ## Basic Details
-### Team Name: [AURORA]
+### Team Name: AURORA
 
 
 ### Team Members
@@ -18,56 +18,41 @@ ODANDAMMAVA AALARIYAM
 Our project is a music player which measures the pace of us walking and plays music accordingly.
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+What if we had a real life bgm?
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+We tried making a pant which has an accelerometer at the ankle which calculates the pace of our walking and is then used to calculate the steps per minute.
+If the steps per minute(spm) is below 1200 then slow songs would be played ,else if its between 100 and 135 medium paced songs and if its greater than 135 faster paced songs would play.
 
 ## Technical Details
 ### Technologies/Components Used
-For Software:
-- [Languages used]
-- [Frameworks used]
-- [Libraries used]
-- [Tools used]
+
 
 For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+ESP 32
+Accelerometer Module: ADXL335
+DF player mini
+Steo down buck converter
+MicroSD Card: A standard 8GB or 16GB card to store your songs
+7.4V battery with charging module.
 
-### Implementation
-For Software:
-# Installation
-[commands]
+### Implementatio
 
-# Run
-[commands]
-
-### Project Documentation
-For Software:
-
-# Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
-
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
-
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
-
-# Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
 
 For Hardware:
 
 # Schematic & Circuit
 ![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
+Battery produces 7.4v and is given to charger module which is connected to step down buck converter which steps down the voltage to 5V.
+The buck converter is connected to DF mini player which contains the SD card with the songs as well as ESP32.
+The accelerometer is then connected to ESP32.
+The speaker is connected to DF mini player and ESP32
 
-![Schematic](Add your schematic diagram here)
+![Schematic]
+
+
+
+
 *Add caption explaining the schematic*
 
 # Build Photos
@@ -85,13 +70,12 @@ For Hardware:
 [Add your demo video link here]
 *Explain what the video demonstrates*
 
-# Additional Demos
-[Add any extra demo materials/links]
+
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- Nifidha K:Circuit and connections.
+- Krishnapriya K M:Dealt with ide
+
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
