@@ -43,7 +43,7 @@ For Hardware:
 
 # Schematic & Circuit
 Circuit
-
+[./circuit]
 
 Battery produces 7.4v and is given to charger module which is connected to step down buck converter which steps down the voltage to 5V.
 The buck converter is connected to DF mini player which contains the SD card with the songs as well as ESP32.
@@ -54,7 +54,7 @@ The speaker is connected to DF mini player and ESP32
 
 
 
-
+[./schematic]
 
 *Add caption explaining the schematic*
 
@@ -70,7 +70,7 @@ The speaker is connected to DF mini player and ESP32
 
 ### Project Demo
 # Video
-[Add your demo video link here]
+https://drive.google.com/file/d/1CRd2sDmZFHVK0vI9gdsttBNMKs7Dhofv/view?usp=sharing
 *Explain what the video demonstrates*
 
 
