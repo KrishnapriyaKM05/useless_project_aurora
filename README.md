@@ -36,19 +36,22 @@ Steo down buck converter
 MicroSD Card: A standard 8GB or 16GB card to store your songs
 7.4V battery with charging module.
 
-### Implementatio
+### Implementation
 
 
 For Hardware:
 
 # Schematic & Circuit
-![Circuit](Add your circuit diagram here)
+Circuit
+
+
 Battery produces 7.4v and is given to charger module which is connected to step down buck converter which steps down the voltage to 5V.
 The buck converter is connected to DF mini player which contains the SD card with the songs as well as ESP32.
 The accelerometer is then connected to ESP32.
 The speaker is connected to DF mini player and ESP32
 
 ![Schematic]
+
 
 
 
