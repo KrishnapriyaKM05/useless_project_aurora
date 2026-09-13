@@ -29,11 +29,11 @@ If the steps per minute(spm) is below certain threshold then slow songs would be
 
 
 For Hardware:
-ESP 32
-Gyroscope-MPU6050
-DF player mini
-Step down buck converter
-MicroSD Card: A standard 4Gb or higher to store your songs
+ESP 32,
+Gyroscope-MPU6050,
+DF player mini,
+Step down buck converter,
+MicroSD Card: A standard 4Gb or higher to store your songs,
 7.4V battery with charging module.
 
 ### Implementation
@@ -43,6 +43,7 @@ For Hardware:
 
 # Schematic & Circuit
 Circuit
+
 [./circuit]
 
 Battery produces 7.4v and is given to charger module which is connected to step down buck converter which steps down the voltage to 5V.
