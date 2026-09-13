@@ -1,113 +1,172 @@
-#include <HardwareSerial.h>
-#include <DFRobotDFPlayerMini.h>
+#include <Wire.h>
+#include "DFRobotDFPlayerMini.h"
 
-// Audio Objects
-HardwareSerial mySerial(2); // Pins 16 RX, 17 TX
-DFRobotDFPlayerMini myDFPlayer;
+// ---------- MPU6050 ----------
+const int MPU_ADDR = 0x68;
+int16_t accX, accY, accZ;
+int16_t gyroX, gyroY, gyroZ;
 
-// --- ADXL335 HARDWARE CONFIGURATION ---
-const int Z_PIN = 32; // Analog input pin connected to ADXL335 Z-axis
+long baseX = 0, baseY = 0, baseZ = 0;
 
-// --- STEP TRACKING CONFIGURATION ---
-const int STEP_THRESHOLD = 1200;         // Trigger value based on your 1000-3000 spikes
-const unsigned long DEBOUNCE_TIME = 260; // Minimum ms between steps to prevent double-counting
+// ---------- DFPlayer ----------
+static const uint8_t PIN_MP3_RX = 16;
+static const uint8_t PIN_MP3_TX = 17;
 
-unsigned long lastStepTime = 0;
-int stepsInLastMinute = 0;
-unsigned long cadenceTimer = 0;
+HardwareSerial mp3Serial(2);
+DFRobotDFPlayerMini player;
 
-// --- USER PROFILE CONFIGURATION ---
-const float STRIDE_LENGTH = 0.8; // Your average stride length in meters
+// ---------- Thresholds (based on your measured data) ----------
+const long LOW_THRESHOLD  = 9000;
+const long MED_THRESHOLD  = 30000;
 
-// --- MUSIC CONFIGURATION ---
-int currentFolder = 0; // Tracks active folder to avoid endlessly restarting songs
+// ---------- Track cycling ----------
+const int TRACKS_IN_FOLDER[4] = {0, 3, 3, 1};
+int lastTrackPlayed[4] = {0, 0, 0, 0};
+
+// ---------- State tracking ----------
+int currentFolder = 0;
+int candidateFolder = 0;
+unsigned long candidateSince = 0;
+const unsigned long STABLE_TIME_MS = 1500;
+
+// ---------- Rolling average window ----------
+const int WINDOW_SIZE = 15;
+long magBuffer[WINDOW_SIZE];
+int bufferIndex = 0;
+bool bufferFilled = false;
+
+void readMPU() {
+  Wire.beginTransmission(MPU_ADDR);
+  Wire.write(0x3B);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_ADDR, 14, true);
+
+  if (Wire.available() == 14) {
+    accX  = Wire.read() << 8 | Wire.read();
+    accY  = Wire.read() << 8 | Wire.read();
+    accZ  = Wire.read() << 8 | Wire.read();
+    Wire.read(); Wire.read();
+    gyroX = Wire.read() << 8 | Wire.read();
+    gyroY = Wire.read() << 8 | Wire.read();
+    gyroZ = Wire.read() << 8 | Wire.read();
+  }
+}
+
+void calibrateMPU() {
+  Serial.println("Calibrating... keep the sensor still and flat.");
+  long sumX = 0, sumY = 0, sumZ = 0;
+  const int samples = 200;
+
+  for (int i = 0; i < samples; i++) {
+    readMPU();
+    sumX += accX;
+    sumY += accY;
+    sumZ += accZ;
+    delay(5);
+  }
+
+  baseX = sumX / samples;
+  baseY = sumY / samples;
+  baseZ = sumZ / samples;
+
+  Serial.print("Baseline -> X: "); Serial.print(baseX);
+  Serial.print(" Y: "); Serial.print(baseY);
+  Serial.print(" Z: "); Serial.println(baseZ);
+}
+
+long getAveragedMagnitude(long newMagnitude) {
+  magBuffer[bufferIndex] = newMagnitude;
+  bufferIndex = (bufferIndex + 1) % WINDOW_SIZE;
+  if (bufferIndex == 0) bufferFilled = true;
+
+  int count = bufferFilled ? WINDOW_SIZE : bufferIndex;
+  long sum = 0;
+  for (int i = 0; i < count; i++) {
+    sum += magBuffer[i];
+  }
+  return sum / count;
+}
+
+void playNextTrackInFolder(int folder) {
+  int totalTracks = TRACKS_IN_FOLDER[folder];
+
+  lastTrackPlayed[folder]++;
+  if (lastTrackPlayed[folder] > totalTracks) {
+    lastTrackPlayed[folder] = 1;
+  }
+
+  Serial.print("Playing folder ");
+  Serial.print(folder);
+  Serial.print(" track ");
+  Serial.println(lastTrackPlayed[folder]);
+
+  player.playFolder(folder, lastTrackPlayed[folder]);
+}
 
 void setup() {
   Serial.begin(115200);
-  mySerial.begin(9600, SERIAL_8N1, 16, 17); // RX=16, TX=17 to connect to DFPlayer
+  delay(1000);
 
-  // Configure the analog pin for the ADXL335
-  pinMode(Z_PIN, INPUT);
+  Wire.begin(21, 22);
+  Wire.setClock(100000);
 
-  Serial.println("\n=== ADXL335 PACED MUSIC TRACKER ARMED ===");
+  Wire.beginTransmission(MPU_ADDR);
+  Wire.write(0x6B);
+  Wire.write(0);
+  byte mpuError = Wire.endTransmission(true);
 
-  Serial.println("Initializing DFPlayer Mini Audio...");
-  if (!myDFPlayer.begin(mySerial)) {
-    Serial.println("❌ ERROR: DFPlayer Mini not responding! Check SD card format and TX/RX wires.");
-    while (1) { delay(10); }
+  if (mpuError == 0) {
+    Serial.println("MPU6050 initialized.");
+  } else {
+    Serial.println("MPU6050 init failed!");
   }
-  
-  myDFPlayer.volume(20); // Initial volume level (0 to 30)
-  cadenceTimer = millis();
-  
-  // Seed the random number generator using an unused analog pin noise
-  randomSeed(analogRead(34)); 
-  
-  Serial.println("✅ System Online! Start moving to trigger your music.");
+
+  calibrateMPU();
+
+  mp3Serial.begin(9600, SERIAL_8N1, PIN_MP3_RX, PIN_MP3_TX);
+  if (player.begin(mp3Serial)) {
+    Serial.println("DFPlayer online.");
+    player.volume(25);
+  } else {
+    Serial.println("DFPlayer failed to initialize!");
+  }
+
+  for (int i = 0; i < WINDOW_SIZE; i++) magBuffer[i] = 0;
 }
 
 void loop() {
-  // Read the raw analog voltage level from the Z-axis (Ankle impact axis)
-  int zRaw = analogRead(Z_PIN);
-  unsigned long currentTime = millis();
+  readMPU();
 
-  // Step Detection Logic using your calibrated threshold
-  if (zRaw > STEP_THRESHOLD && (currentTime - lastStepTime) > DEBOUNCE_TIME) {
-    stepsInLastMinute++;
-    lastStepTime = currentTime;
-    Serial.print("👟 Foot Strike! Value: ");
-    Serial.print(zRaw);
-    Serial.print(" | Step Count: ");
-    Serial.println(stepsInLastMinute);
+  long deltaX = abs(accX - baseX);
+  long deltaY = abs(accY - baseY);
+  long deltaZ = abs(accZ - baseZ);
+  long rawMagnitude = deltaX + deltaY + deltaZ;
+
+  long avgMagnitude = getAveragedMagnitude(rawMagnitude);
+
+  Serial.print("Raw: "); Serial.print(rawMagnitude);
+  Serial.print(" Avg: "); Serial.println(avgMagnitude);
+
+  int targetFolder;
+  if (avgMagnitude < LOW_THRESHOLD) {
+    targetFolder = 1;
+  } else if (avgMagnitude < MED_THRESHOLD) {
+    targetFolder = 2;
+  } else {
+    targetFolder = 3;
   }
 
-  // Evaluate pace every 10 seconds to keep track switches fast and responsive
-  if (currentTime - cadenceTimer >= 10000) {
-    // Extrapolate the 10-second data window to get Steps Per Minute (SPM)
-    float spm = stepsInLastMinute * 6.0; 
-    
-    // Reset window counters immediately
-    stepsInLastMinute = 0;
-    cadenceTimer = currentTime;
+  unsigned long now = millis();
 
-    if (spm > 40) { // User is actively moving
-      // Pace Calculation: Minutes per Kilometer
-      float pace = 1000.0 / (spm * STRIDE_LENGTH);
-      
-      Serial.print("Current Cadence: "); Serial.print(spm); Serial.print(" SPM | ");
-      Serial.print("Calculated Pace: "); Serial.print(pace); Serial.println(" min/km");
-
-      int targetFolder = 1; // Default: Folder 01 (Slow / Walking)
-      
-      if (spm >= 100 && spm < 135) {
-        targetFolder = 2; // Folder 02 (Medium / Jogging)
-      } else if (spm >= 135) {
-        targetFolder = 3; // Folder 03 (Fast / Running)
-      }
-
-      // Change songs only when you shift pace categories
-      if (targetFolder != currentFolder) {
-        currentFolder = targetFolder;
-        
-        // Pick a random track number between 1 and 5
-        int randomTrack = random(1, 6); 
-        
-        Serial.print("🎵 Pace Shifted! Playing Folder: ");
-        Serial.print(currentFolder);
-        Serial.print(" -> Random Track: ");
-        Serial.println(randomTrack);
-        
-        // Command syntax: playFolder(folderNumber, trackNumber)
-        myDFPlayer.playFolder(currentFolder, randomTrack); 
-      }
-      
-    } else {
-      // Pause music when you stand completely still
-      Serial.println("🔇 User stationary. Pausing playback.");
-      myDFPlayer.pause();
-      currentFolder = 0; 
-    }
+  if (targetFolder != candidateFolder) {
+    candidateFolder = targetFolder;
+    candidateSince = now;
   }
-  
-  delay(15); // Small delay to let the analog pin stabilize between reads
+
+  if (candidateFolder != currentFolder && (now - candidateSince >= STABLE_TIME_MS)) {
+    currentFolder = candidateFolder;
+    playNextTrackInFolder(currentFolder);
+  }
+
+  delay(50);
 }
