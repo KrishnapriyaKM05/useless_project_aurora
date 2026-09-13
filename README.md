@@ -65,11 +65,39 @@ A common ground is formed between gyroscope,esp32,buck converter and df mini.
 
 
 # Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
+![Components]
 
-![Build](Add photos of build process here)
-*Explain the build steps*
+[./esp32]
+
+ESP32
+
+[./HW-907ABC]
+
+Charging module
+
+[./gyroscope-MPU6050]
+
+[./7.4v_battery]
+
+[./8ohm_minispeaker]
+
+[./dfplayermini]
+
+[./stepdown_buckconverter]
+
+
+
+
+![Build]
+
+[./build_process1]
+
+Calibrating the gyroscope to predict the correct songs according to the pace.
+
+[./build_process2]
+
+7.4v from battery is stepped down to 5v using buck converter which was calibrated to 5v before.
+
 
 ![Final](Add photo of final product here)
 [./completed_circuit]
@@ -78,8 +106,14 @@ A common ground is formed between gyroscope,esp32,buck converter and df mini.
 
 ### Project Demo
 # Video
+
+https://drive.google.com/file/d/1B0a1SP03Lwcu_lkJ9sFvAyMfTVeQX4bV/view?usp=sharing
+
+
 https://drive.google.com/file/d/1CRd2sDmZFHVK0vI9gdsttBNMKs7Dhofv/view?usp=sharing
-*Explain what the video demonstrates*
+
+
+
 
 
 
