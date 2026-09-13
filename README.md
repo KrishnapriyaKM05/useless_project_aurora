@@ -22,7 +22,7 @@ What if we had a real life bgm?
 
 ### The Solution (that nobody asked for)
 We tried making a pant which has an gyroscope at the ankle which calculates the pace of our walking and is then used to calculate the steps per minute.
-If the steps per minute(spm) is below certain threshold then slow songs would be played ,else if its between then medium paced songs and if its greater than given threshold faster paced songs would play.
+If the steps per minute(spm) is below certain threshold then slow songs would be played ,else if its between,then medium paced songs and if its greater than given threshold faster paced songs would play.
 
 ## Technical Details
 ### Technologies/Components Used
@@ -107,8 +107,13 @@ Calibrating the gyroscope to predict the correct songs according to the pace.
 ### Project Demo
 # Video
 
-https://drive.google.com/file/d/1B0a1SP03Lwcu_lkJ9sFvAyMfTVeQX4bV/view?usp=sharing
+https://drive.google.com/file/d/1KnG8c4DPN9-NSQsFqPzCVsRzqmkEVAgU/view?usp=sharing
 
+https://drive.google.com/file/d/1EFFeL5qsfLNIIDsSMquzKpMts_BXWx4_/view?usp=drive_link
+
+https://drive.google.com/file/d/16OQhUnsHDQhOYjg49GyouTNFMKOTI9ks/view?usp=drive_link
+
+https://drive.google.com/file/d/1B0a1SP03Lwcu_lkJ9sFvAyMfTVeQX4bV/view?usp=sharing
 
 https://drive.google.com/file/d/1CRd2sDmZFHVK0vI9gdsttBNMKs7Dhofv/view?usp=sharing
 
