@@ -3,6 +3,7 @@
 
 
 ODANDAMMAVA AALARIYAM
+Wearable tech🫶🏻
 
 
 ## Basic Details
