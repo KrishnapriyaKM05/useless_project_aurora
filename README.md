@@ -56,7 +56,7 @@ The speaker is connected to DF mini player and ESP32.
 
 Schematic
 
-[./schematic]
+![Schematic](./schematic.jpeg)
 
 The positve of 7.4v battery is connected to Bat of charging module and the negative of the battery is connected to the ground.
 From bat the charger module is connected to the IN+ of the buck converter and from GND its connected to the IN- of the charger module.
@@ -70,42 +70,42 @@ A common ground is formed between gyroscope,esp32,buck converter and df mini.
 # Build Photos
 ![Components]
 
-[./esp32]
+![esp32](./esp32.jpeg)
 
 ESP32
 
-[./HW-907ABC]
+![charging module](./HW-907ABC.jpeg)
 
 Charging module
 
-[./gyroscope-MPU6050]
+![](./gyroscope-MPU6050.jpeg)
 
-[./7.4v_battery]
+![](./7.4v_battery.jpeg)
 
-[./8ohm_minispeaker]
+![](./8ohm_minispeaker.jpeg)
 
-[./dfplayermini]
+![](./dfplayermini.jpeg)
 
-[./stepdown_buckconverter]
+![](./stepdown_buckconverter.jpeg)
 
 
 
 
 ![Build]
 
-[./build_process1]
+![](./build_process1.jpeg)
 
 Calibrating the gyroscope to predict the correct songs according to the pace.
 
-[./build_process2]
+![](./build_process2.jpeg)
 
 7.4v from battery is stepped down to 5v using buck converter which was calibrated to 5v before.
 
 
 ![Final](Add photo of final product here)
-[./completed_circuit]
-[./working_circuit]
-[./bag]
+![](./completed_circuit.jpeg)
+![](./working_circuit.jpeg)
+![](./bag.jpeg)
 
 ### Project Demo
 # Video
